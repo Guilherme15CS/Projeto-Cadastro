@@ -20,6 +20,17 @@ def pagina_inicial():
     st.rerun() # Roda o codigo denovo para fazer a ação acima
 
 
+def conectar():
+    return pymysql.connect(
+        host=st.secrets["mysql"]["host"],
+        port=st.secrets["mysql"]["port"],
+        user=st.secrets["mysql"]["user"],
+        password=st.secrets["mysql"]["password"],
+        database=st.secrets["mysql"]["database"],
+        ssl={"ca": "ca.pem"}
+    )
+
+
 # Configurações iniciais da pagina 
 st.set_page_config(page_title="Sistema de Cadastro", page_icon="🗂️" , layout="wide")
 
@@ -36,21 +47,20 @@ data_minima = datetime.date(1900, 1, 1)
 #data_maxima = datetime.date.today().year
 
 # A engine é uma ligação direta do Python com o MySQl sem que acontece nehum erro de "entendimento" entre eles 
-engine = create_engine('mysql+pymysql://root:@127.0.0.1/pessoas')
+engine = create_engine(
+    f'mysql+pymysql://{st.secrets["mysql"]["user"]}:{st.secrets["mysql"]["password"]}'
+    f'@{st.secrets["mysql"]["host"]}:{st.secrets["mysql"]["port"]}/{st.secrets["mysql"]["database"]}'
+    f'?ssl_ca=ca.pem')
 
 
 # Conexão com o Banco de Dados com tratamento de erro caso ele não esteja funcionando
 try:
-    conexao = pymysql.connect(
-            host='127.0.0.1',
-            user='root',
-            password='',
-            database='pessoas'
-    )
+    conexao = conectar()
     conexao.close()
-except:
+except Exception as e:
     #print("Banco não Conectado")
     st.title("O Banco de Dados não está funcionando")
+    st.error(f"Erro detalhado {e}")
     exit()
 
 
@@ -75,12 +85,7 @@ opcoes = st.sidebar.radio(
 if opcoes == "Visualizar":
     #st.title("Você apertou em Visualizar", text_alignment= "center")
     # Abrindo o Banco de Dados 
-    conexao = pymysql.connect(
-                host='127.0.0.1',
-                user='root',
-                password='',
-                database='pessoas'
-    )
+    conexao = conectar()
 
     # Fazendo uma variavel com o camndo de selecionar todos os dados com o auxilio de intepretação da engine
     comando = pd.read_sql("SELECT * FROM informações ORDER BY Id", engine)
@@ -98,12 +103,7 @@ if opcoes == "Visualizar":
 elif opcoes == "Adicionar":
 
     # Abrindo o Banco de Dados
-    conexao = pymysql.connect(
-                    host='127.0.0.1',
-                    user='root',
-                    password='',
-                    database='pessoas'
-        )
+    conexao = conectar()
     cursor = conexao.cursor()
     
     #st.title("Você apertou em Adicionar", text_alignment= "center")
@@ -194,12 +194,7 @@ elif opcoes == "Adicionar":
 elif opcoes == "Remover":
     #st.title("Você apertou em Remover", text_alignment= "center")
     # Abrindo o Banco de Dados 
-    conexao = pymysql.connect(
-                host='127.0.0.1',
-                user='root',
-                password='',
-                database='pessoas'
-        )
+    conexao = conectar()
     cursor = conexao.cursor()
     
     st.header("Remover Cadastro")
@@ -244,12 +239,7 @@ elif opcoes == "Remover":
 elif opcoes == "Atualizar":
     #st.title("Você apertou em Atualizar", text_alignment= "center")
     # Abrindo o Banco de Dados 
-    conexao = pymysql.connect(
-                host='127.0.0.1',
-                user='root',
-                password='',
-                database='pessoas'
-            )
+    conexao = conectar()
     cursor = conexao.cursor()
 
 
@@ -470,7 +460,3 @@ elif opcoes == "Atualizar":
             cursor.close()
 
             pagina_inicial()
-
-        
-
-        
