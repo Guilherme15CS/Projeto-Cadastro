@@ -175,7 +175,7 @@ elif opcoes == "Adicionar":
 
 
     # Comando de adição de dados dentro do BD 
-    adicionr = f'INSERT INTO informações (CPF, Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_torce) VALUES ("{add_CPF}", "{add_Nome}", "{add_Sexo}", "{add_Data}", "{add_Situ}", "{add_Esta}", "{add_Cida}", "{add_Time}")'
+    adicionr = f"INSERT INTO informações (CPF, Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_torce) VALUES ('{add_CPF}', '{add_Nome}', '{add_Sexo}', '{add_Data}', '{add_Situ}', '{add_Esta}', '{add_Cida}', '{add_Time}')"
 
     #Botão que adiciona todos os dados no BD com os comando de integração e fechamento do mesmo
     if st.button("Adicionar"):
@@ -217,7 +217,7 @@ elif opcoes == "Remover":
     st.warning(f"Removendo: **{nome_remover}** do CPF **{cpf_remover}**")
 
     #Comando para remover o cadastro com o id selecionado
-    remover = f'DELETE FROM informações WHERE Id = {id_remover}'
+    remover = f"DELETE FROM informações WHERE Id = {id_remover}"
 
     #Botão que remove o usuario selecionado
     if st.button("Remover"):
