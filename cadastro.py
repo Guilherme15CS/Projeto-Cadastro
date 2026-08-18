@@ -15,8 +15,22 @@ from sqlalchemy import create_engine
 import datetime
 
 
+def pagina_inicial():
+    st.session_state.proxima_aba = "Visualizar"  # faz a "solicitação de troca de pagina"
+    st.rerun() # Roda o codigo denovo para fazer a ação acima
+
+
 # Configurações iniciais da pagina 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Sistema de Cadastro", page_icon="🗂️" , layout="wide")
+
+# Obriga o site a começar com a tela de visualizar a tabela
+if "opcoes" not in st.session_state:
+    st.session_state.opcoes = "Visualizar"
+
+# Faz voltar para a tela que for selecionada na parte do codigo onde a variavel session_state.proxima_abo for chamada
+if "proxima_aba" in st.session_state:
+    st.session_state.opcoes = st.session_state.proxima_aba
+    del st.session_state.proxima_aba
 
 data_minima = datetime.date(1900, 1, 1)
 #data_maxima = datetime.date.today().year
@@ -49,7 +63,8 @@ st.header("Sistema de Cadastro", divider="gray", text_alignment="center")
 st.sidebar.title("Menu", text_alignment='left')
 opcoes = st.sidebar.radio(
     "O que deseja fazer?",
-    ["Visualizar", "Adicionar", "Remover", "Atualizar"], )
+    ["Visualizar", "Adicionar", "Remover", "Atualizar"],
+    key="opcoes" )
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=
 #OPÇÃO VISUALIZAR
@@ -68,10 +83,10 @@ if opcoes == "Visualizar":
     )
 
     # Fazendo uma variavel com o camndo de selecionar todos os dados com o auxilio de intepretação da engine
-    comando = pd.read_sql("SELECT * FROM informações", engine)
+    comando = pd.read_sql("SELECT * FROM informações ORDER BY Id", engine)
 
     # Comando para aparecer no site como uma tabela (tipo Excel)
-    st.dataframe(comando)
+    st.table(comando)
 
     conexao.close()
 
@@ -107,7 +122,13 @@ elif opcoes == "Adicionar":
 
     # Uso da coluna 1 com os seguintes dados CPF, NOME, SEXO, DATA DE NASCIEMNTO
     with col1:
-        add_CPF = st.text_input("CPF")
+        add_CPF = st.text_input("CPF (apenas números)")
+
+        # Fazendo a Formatação do CPF para facilitar o cadastro
+
+        cpf_formatado = f"{add_CPF[:3]}.{add_CPF[3:6]}.{add_CPF[6:9]}-{add_CPF[9:]}"
+
+        add_CPF = cpf_formatado
 
         add_Nome =st.text_input("Nome")
 
@@ -163,6 +184,7 @@ elif opcoes == "Adicionar":
                     
         conexao.close()
         cursor.close()
+        pagina_inicial()
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=
 #OPÇÃO REMOVER
@@ -183,9 +205,9 @@ elif opcoes == "Remover":
     st.header("Remover Cadastro")
 
     # Fazendo uma variavel com o comando de selecionar alguns dados com o auxilio da engine
-    comando = pd.read_sql("SELECT Id, CPF, Nome FROM informações", engine)
+    comando = pd.read_sql("SELECT Id, CPF, Nome FROM informações ORDER BY Id", engine)
 
-    st.dataframe(comando)
+    st.table(comando)
 
     #Selecionando o Id da pessoa que ira ser removida
     id_remover = st.selectbox("Selecione o Id para remover", comando["Id"]) #Comando["Id"] Vai na tabela e seleciona apenas a coluna ID
@@ -210,6 +232,8 @@ elif opcoes == "Remover":
         conexao.close()
         cursor.close()
 
+        pagina_inicial()
+
 
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=
@@ -232,11 +256,11 @@ elif opcoes == "Atualizar":
     st.header("Atualizção de Cadastro")
 
     # Fazendo uma variavel com o comando de selecionar alguns dados com o auxilio da engine
-    comando = pd.read_sql("SELECT Id, CPF, Nome FROM informações", engine)
+    comando = pd.read_sql("SELECT Id, CPF, Nome FROM informações ORDER BY Id", engine)
 
     tabela = pd.read_sql("SELECT * FROM informações", engine)
 
-    st.dataframe(comando)
+    st.table(comando)
 
     #Selecionando a pessoa pelo id para alterção
     id_altera = st.selectbox("Selecione o Id para atualizar", tabela["Id"])
@@ -293,6 +317,8 @@ elif opcoes == "Atualizar":
             conexao.close()
             cursor.close()
 
+            pagina_inicial()
+
     #Alteração no campo Sexo
     elif campo_altera == "Sexo":
 
@@ -318,6 +344,8 @@ elif opcoes == "Atualizar":
                         
             conexao.close()
             cursor.close()
+
+            pagina_inicial()
         
         
     #Alteração no campo data    
@@ -339,6 +367,8 @@ elif opcoes == "Atualizar":
                     
             conexao.close()
             cursor.close()
+
+            pagina_inicial()
 
     #Alteração no campo Situação Civil
     elif campo_altera == "Situação_Civil":
@@ -367,6 +397,8 @@ elif opcoes == "Atualizar":
             conexao.close()
             cursor.close()
 
+            pagina_inicial()
+
     #Alteração no campo Estado Civil
     elif campo_altera == "Estado_Civil":
 
@@ -387,6 +419,8 @@ elif opcoes == "Atualizar":
             conexao.close()
             cursor.close()
 
+            pagina_inicial()
+
     #Alteração no campo Cidade que Mora
     elif campo_altera == "Cidade_que_Mora":   
 
@@ -406,6 +440,8 @@ elif opcoes == "Atualizar":
                                             
             conexao.close()
             cursor.close()
+
+            pagina_inicial()
 
 
     #Alteração no campo Time que Torce
@@ -432,6 +468,8 @@ elif opcoes == "Atualizar":
                                                     
             conexao.close()
             cursor.close()
+
+            pagina_inicial()
 
         
 
