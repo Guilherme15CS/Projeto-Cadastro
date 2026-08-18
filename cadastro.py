@@ -175,7 +175,7 @@ elif opcoes == "Adicionar":
 
 
     # Comando de adição de dados dentro do BD 
-    adicionr = f"INSERT INTO informações (CPF, Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_torce) VALUES ('{add_CPF}', '{add_Nome}', '{add_Sexo}', '{add_Data}', '{add_Situ}', '{add_Esta}', '{add_Cida}', '{add_Time}')"
+    adicionr = f"INSERT INTO informações (CPF, Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_Torce) VALUES ('{add_CPF}', '{add_Nome}', '{add_Sexo}', '{add_Data}', '{add_Situ}', '{add_Esta}', '{add_Cida}', '{add_Time}')"
 
     #Botão que adiciona todos os dados no BD com os comando de integração e fechamento do mesmo
     if st.button("Adicionar"):
@@ -277,13 +277,13 @@ elif opcoes == "Atualizar":
     cidade_altera = tabela.loc[tabela["Id"] == id_altera, "Cidade_que_Mora"].values[0]  
 
     #Localica (.loc) na coluna Id onde for igual ao Id seleciona o Time na linha
-    time_altera = tabela.loc[tabela["Id"] == id_altera, "Time_que_torce"].values[0] 
+    time_altera = tabela.loc[tabela["Id"] == id_altera, "Time_que_Torce"].values[0] 
 
     st.warning(f"Alterando valores do usuario: {nome_altera} do CPF {cpf_altera}")
 
 
     #Cria uma variavel que apenas lê o nome nas colunas 
-    colunas = pd.read_sql("SELECT Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_torce FROM informações", engine)
+    colunas = pd.read_sql("SELECT Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_Torce FROM informações", engine)
     #Campo para Selecionar a coluna que deseja alterar
     campo_altera = st.selectbox("Selecione o campo para alterar", colunas.columns)
 
@@ -435,7 +435,7 @@ elif opcoes == "Atualizar":
 
 
     #Alteração no campo Time que Torce
-    elif campo_altera == "Time_que_torce":
+    elif campo_altera == "Time_que_Torce":
 
         #Mostra o dado atual
         st.info(f'O campo "Time que Torce" atualmente está como: {time_altera}')
@@ -449,7 +449,7 @@ elif opcoes == "Atualizar":
             novo_time = "Não torce para nenhum time"
 
         #Comando para alterar o campo
-        alteracao = f"UPDATE informações SET Time_que_torce = '{novo_time}' WHERE Id = {id_altera}"
+        alteracao = f"UPDATE informações SET Time_que_Torce = '{novo_time}' WHERE Id = {id_altera}"
                                         
         #Botão que atualiza o campo
         if st.button("Atualizar"):
