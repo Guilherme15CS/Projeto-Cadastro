@@ -133,21 +133,19 @@ elif opcoes == "Adicionar":
 
         add_Email = st.text_input("Email")
 
+        add_Telefone = st.text_input("Telefone (apenas número)")
+
+        #Fazendo formatação do Telefone para facilitar cadastro
+        telefone_formatado = f"({add_Telefone[:2]}) {add_Telefone[2:7]}-{add_Telefone[7:]}"
+
+        add_Telefone = telefone_formatado
         
-        add_Data = st.date_input("Data de Nascimento", value=None, min_value=data_minima, max_value="today", format="DD/MM/YYYY")
 
 
     # Uso da coluna 2 com os seguintes dados SITUAÇÃO CIVIL, ESTADO CIVIL, CIDADE, TIME
     with col2:
-        add_Situ = Situ = st.selectbox("Situação Civil", options=["Empregado(a)", "Desempregado(a)", "Estudante", "Aposentado(a)"])
-
-
-        add_Telefone = st.text_input("Telefone (apenas número)")
-
-        #Fazendo formatação do Telefone para facilitar cadastro
-        telefone_formatado = f"({add_Telefone[:2]}) {add_Telefone[2:6]}-{add_Telefone[6:]}"
-
-        add_Telefone = telefone_formatado
+        
+        add_Data = st.date_input("Data de Nascimento", value=None, min_value=data_minima, max_value="today", format="DD/MM/YYYY")
 
         
         add_Esta = st.selectbox("Estado Civil", options=["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)"])
