@@ -107,11 +107,9 @@ elif opcoes == "Adicionar":
     cursor = conexao.cursor()
     
     #st.title("Você apertou em Adicionar", text_alignment= "center")
-    #Text input Cpf, Nome, Cidade
-    #Selectbox para Situação, Estado Civil 
+    #Text input Cpf, Nome, Cidade, Email, Telefone
+    #Selectbox para  Estado Civil 
     #TESTAR Data input Para Nascimento
-    #Radio para Time, Sexo
-    #Se sim para time aparce campo para escrever, senao não aparece nada
     #Se empregado Aparecer campo de Emprego
     #Se estudante aparecer outro Selectbox Para Escola ou Faculdade
 
@@ -133,12 +131,7 @@ elif opcoes == "Adicionar":
         add_Nome =st.text_input("Nome")
 
 
-        sexo = st.radio("Sexo",
-                ["Masculino", "Feminino"])
-        if sexo == "Masculino":
-            add_Sexo = "M"
-        elif sexo == "Feminino":
-            add_Sexo = "F"
+        add_Email = st.text_input("Email")
 
         
         add_Data = st.date_input("Data de Nascimento", value=None, min_value=data_minima, max_value="today", format="DD/MM/YYYY")
@@ -149,33 +142,23 @@ elif opcoes == "Adicionar":
         add_Situ = Situ = st.selectbox("Situação Civil", options=["Empregado(a)", "Desempregado(a)", "Estudante", "Aposentado(a)"])
 
 
-        if Situ == "Estudante":
-            Estudante_Situ = st.radio("Estudante",
-            ["Escola", "Faculdade"]) 
-            add_Situ = f"{Situ}/{Estudante_Situ}" 
-           
-        elif Situ == "Empregado(a)":
-            Empregado_Situ = st.text_input("Digite seu cargo")
-            add_Situ = f"{Situ}/{Empregado_Situ}"
+        add_Telefone = st.text_input("Telefone (apenas número)")
+
+        #Fazendo formatação do Telefone para facilitar cadastro
+        telefone_formatado = f"({add_Telefone[:2]}) {add_Telefone[2:6]}-{add_Telefone[6:]}"
+
+        add_Telefone = telefone_formatado
 
         
-
-        add_Esta = st.selectbox("Estado Civil", options=["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "Namoradno"])
+        add_Esta = st.selectbox("Estado Civil", options=["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)"])
 
 
         add_Cida = st.text_input("Cidade onde mora")
 
 
-        Torce = st.radio("Torce para algum time?",
-                ["Sim", "Não"])
-        if Torce == "Sim":
-            add_Time = st.text_input("Qual time você torce")
-        elif Torce == "Não":
-            add_Time = "Não torce para nenhum time"
-
 
     # Comando de adição de dados dentro do BD 
-    adicionr = f"INSERT INTO informações (CPF, Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_Torce) VALUES ('{add_CPF}', '{add_Nome}', '{add_Sexo}', '{add_Data}', '{add_Situ}', '{add_Esta}', '{add_Cida}', '{add_Time}')"
+    adicionr = f"INSERT INTO informações (CPF, Nome, Email, Telefone, Data_de_Nascimento, Estado_Civil, Cidade_que_Mora) VALUES ('{add_CPF}', '{add_Nome}', '{add_Email}', '{add_Telefone}', '{add_Data}', '{add_Esta}', '{add_Cida}')"
 
     #Botão que adiciona todos os dados no BD com os comando de integração e fechamento do mesmo
     if st.button("Adicionar"):
@@ -261,14 +244,14 @@ elif opcoes == "Atualizar":
     #Localica (.loc) na coluna Id onde for igual ao Id seleciona o Nome na linha
     nome_altera = tabela.loc[tabela["Id"] == id_altera, "Nome"].values[0] 
 
-    #Localica (.loc) na coluna Id onde for igual ao Id seleciona o Sexo na linha
-    sexo_altera = tabela.loc[tabela["Id"] == id_altera, "Sexo"].values[0] 
+    #Localica (.loc) na coluna Id onde for igual ao Id seleciona o Email  na linha
+    email_altera = tabela.loc[tabela["Id"] == id_altera, "Email"].values[0] 
 
     #Localica (.loc) na coluna Id onde for igual ao Id seleciona a Data de Nascimento na linha
     data_altera = tabela.loc[tabela["Id"] == id_altera, "Data_de_Nascimento"].values[0] 
 
-    #Localica (.loc) na coluna Id onde for igual ao Id seleciona a Situação Civil na linha
-    situacao_altera = tabela.loc[tabela["Id"] == id_altera, "Situação_Civil"].values[0] 
+    #Localica (.loc) na coluna Id onde for igual ao Id seleciona o Telefone na linha
+    telefone_altera = tabela.loc[tabela["Id"] == id_altera, "Telefone"].values[0] 
 
     #Localica (.loc) na coluna Id onde for igual ao Id seleciona o Estado Civil na linha
     estado_altera = tabela.loc[tabela["Id"] == id_altera, "Estado_Civil"].values[0]
@@ -276,14 +259,12 @@ elif opcoes == "Atualizar":
     #Localica (.loc) na coluna Id onde for igual ao Id seleciona a Cidade na linha
     cidade_altera = tabela.loc[tabela["Id"] == id_altera, "Cidade_que_Mora"].values[0]  
 
-    #Localica (.loc) na coluna Id onde for igual ao Id seleciona o Time na linha
-    time_altera = tabela.loc[tabela["Id"] == id_altera, "Time_que_Torce"].values[0] 
 
     st.warning(f"Alterando valores do usuario: {nome_altera} do CPF {cpf_altera}")
 
 
     #Cria uma variavel que apenas lê o nome nas colunas 
-    colunas = pd.read_sql("SELECT Nome, Sexo, Data_de_Nascimento, Situação_Civil, Estado_Civil, Cidade_que_Mora, Time_que_Torce FROM informações", engine)
+    colunas = pd.read_sql("SELECT Nome, Email, Telefone, Data_de_Nascimento, Estado_Civil, Cidade_que_Mora FROM informações", engine)
     #Campo para Selecionar a coluna que deseja alterar
     campo_altera = st.selectbox("Selecione o campo para alterar", colunas.columns)
 
@@ -309,23 +290,18 @@ elif opcoes == "Atualizar":
 
             pagina_inicial()
 
-    #Alteração no campo Sexo
-    elif campo_altera == "Sexo":
+    #Alteração no campo Email
+    elif campo_altera == "Email":
 
         #Mostra o dado atual
-        st.info(f'O campo "Sexo" atualmente está como: {sexo_altera}')
+        st.info(f'O campo "Email" atualmente está como: {email_altera}')
         
         #Seleciona o novo dado do campo
-        sexo = st.radio("Sexo",
-                        ["Masculino", "Feminino"])
-        if sexo == "Masculino":
-            novo_sexo = "M"
-        elif sexo == "Feminino":
-            novo_sexo = "F"
+        novo_email = st.text_input("Email")
 
 
         #Comando para alterar o campo
-        alteracao = f"UPDATE informações SET Sexo = '{novo_sexo}' WHERE Id = {id_altera}"
+        alteracao = f"UPDATE informações SET Email = '{novo_email}' WHERE Id = {id_altera}"
 
         #Botão que atualiza o campo
         if st.button("Atualizar"):
@@ -360,24 +336,22 @@ elif opcoes == "Atualizar":
 
             pagina_inicial()
 
-    #Alteração no campo Situação Civil
-    elif campo_altera == "Situação_Civil":
+    #Alteração no campo Teelfone
+    elif campo_altera == "Telefone":
 
         #Mostra o dado atual
-        st.info(f'O campo "Situação Civil atualmente está como: {situacao_altera}"')
+        st.info(f'O campo "Situação Civil atualmente está como: {telefone_altera}"')
 
         #Selecionando o novo dado do campo
-        nova_situ = Situ = st.selectbox("Situação Civil", options=["Empregado(a)", "Desempregado(a)", "Estudante", "Aposentado(a)"])
-        if Situ == "Estudante":
-            nova_estu = st.radio('Estudante',
-                     ["Escola", "Faculdade"])
-            nova_situ = f"{Situ}/{nova_estu}"
-        elif Situ == "Empregado(a)":
-            nova_empre = st.text_input("Digite seu cargo")
-            nova_situ = f"{Situ}/{nova_empre}"
+        novo_telefone = st.text_input("Telefone (apenas número)")
+        
+        #Fazendo formatação do Telefone para facilitar cadastro
+        telefone_formatado = f"({novo_telefone[:2]}) {novo_telefone[2:7]}-{novo_telefone[7:]}"
+    
+        novo_telefone = telefone_formatado
 
         #Comando para alterar o campo
-        alteracao = f"UPDATE informações SET Situação_Civil = '{nova_situ}' WHERE Id = {id_altera}"
+        alteracao = f"UPDATE informações SET Telefone = '{novo_telefone}' WHERE Id = {id_altera}"
                 
         #Botão que atualiza o campo
         if st.button("Atualizar"):
@@ -396,7 +370,7 @@ elif opcoes == "Atualizar":
         st.info(f'O campo "Estado Civil" atualmente está como: {estado_altera}')
 
         #Selecionadno o novo dado do campo
-        novo_estado = st.selectbox("Estado Civil", options=["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "Namoradno"])
+        novo_estado = st.selectbox("Estado Civil", options=["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)"])
 
         #Comando para alterar o campo
         alteracao = f"UPDATE informações SET Estado_Civil = '{novo_estado}' WHERE Id = {id_altera}"
@@ -428,34 +402,6 @@ elif opcoes == "Atualizar":
             cursor.execute(alteracao)
             conexao.commit()
                                             
-            conexao.close()
-            cursor.close()
-
-            pagina_inicial()
-
-
-    #Alteração no campo Time que Torce
-    elif campo_altera == "Time_que_Torce":
-
-        #Mostra o dado atual
-        st.info(f'O campo "Time que Torce" atualmente está como: {time_altera}')
-
-        #Selecionando o novo dado do campo
-        novo_Torce = st.radio("Torce para algum time?",
-                ["Sim", "Não"])
-        if novo_Torce == "Sim":
-            novo_time = st.text_input("Qual time você torce")
-        elif novo_Torce == "Não":
-            novo_time = "Não torce para nenhum time"
-
-        #Comando para alterar o campo
-        alteracao = f"UPDATE informações SET Time_que_Torce = '{novo_time}' WHERE Id = {id_altera}"
-                                        
-        #Botão que atualiza o campo
-        if st.button("Atualizar"):
-            cursor.execute(alteracao)
-            conexao.commit()
-                                                    
             conexao.close()
             cursor.close()
 
